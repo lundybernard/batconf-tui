@@ -8,9 +8,7 @@ async def test_app_starts() -> None:
 
     tui = BatConfApp()
     async with tui.run_test() as _:
-        # check that message is in the DOM
-        msg = app.query_one("#welcome-message")
-        assert msg.renderable == 'Welcome to BatConf TUI!'
+        assert tui.is_running
 
 
 @pytest.mark.asyncio
@@ -18,6 +16,17 @@ async def test_quit() -> None:
     """q to quit"""
 
     tui = BatConfApp()
-    async with tui.run_tests as pilot:
+    async with tui.run_test() as pilot:
+        assert tui.is_running
         await pilot.press("q")
-        assert not app.is_running
+        assert not tui.is_running
+
+
+@pytest.mark.asyncio
+async def test_welcome_message() -> None:
+    tui = BatConfApp()
+    async with tui.run_test() as _:
+        assert tui.is_running
+        # check that mesage is in the DOM
+        msg = tui.query_one("#welcome-message")
+        assert str(msg.render()) == 'Welcome to BatConf TUI'

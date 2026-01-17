@@ -1,6 +1,10 @@
 from unittest import TestCase
+from unittest.mock import patch, Mock
 
-from ..tui import BatConfApp, Static
+from ..tui import BatConfApp, Static, run_tui
+
+
+SRC = 'batconf_tui.tui'
 
 
 class BatConfAppTests(TestCase):
@@ -21,3 +25,12 @@ class BatConfAppTests(TestCase):
        }
        welcome = widgets['welcome-message']
        t.assertEqual('Welcome to BatConf TUI', welcome.render())
+
+
+class tuiTests(TestCase):
+
+    @patch(f'{SRC}.BatConfApp', autospec=True)
+    def test_run_tui(t, BatConfApp: Mock):
+        run_tui()
+        BatConfApp.assert_called_once()
+        BatConfApp.return_value.run.assert_called_once()

@@ -1,4 +1,4 @@
-from textual.app import App
+from textual.app import App, ComposeResult
 from textual.widgets import Static
 
 
@@ -8,3 +8,8 @@ class BatConfApp(App[None]):
 
     def compose(self) -> ComposeResult:
         yield Static('Welcome to BatConf TUI', id='welcome-message')
+
+
+def run_tui() -> None:
+    tui = BatConfApp()
+    tui.run()

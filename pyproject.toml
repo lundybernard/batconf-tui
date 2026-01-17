@@ -34,6 +34,9 @@ dependencies = [
   'textual',
 ]
 
+[project.scripts]
+batui = 'batconf_tui.tui:run_tui'
+
 [project.urls]
 Homepage = "https://github.com/lundybernard/batconf-tui"
 "Bug Tracker" = "https://github.com/lundybernard/batconf-tui/issues"

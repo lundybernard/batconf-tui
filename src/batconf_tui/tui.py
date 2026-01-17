@@ -1,0 +1,4 @@
+
+
+class BatConfApp:
+    pass

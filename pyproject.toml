@@ -30,7 +30,9 @@ classifiers = [
   "Typing :: Typed",
 ]
 dynamic = ["version"]
-dependencies = []
+dependencies = [
+  'textual',
+]
 
 [project.urls]
 Homepage = "https://github.com/lundybernard/batconf-tui"
@@ -41,8 +43,9 @@ Changelog = "https://github.com/lundybernard/batconf-tui/releases"
 
 [dependency-groups]
 test = [
-  "pytest >=9",
-  "pytest-cov >=7",
+  "pytest",
+  "pytest-cov",
+  'pytest-asyncio',
 ]
 dev = [
   { include-group = "test" },
@@ -77,6 +80,7 @@ filterwarnings = [
 ]
 log_level = "INFO"
 testpaths = [
+  'src',
   "tests",
 ]
 

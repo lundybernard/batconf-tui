@@ -1,0 +1,13 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: 2025.11.21-25-gad4434f
+_src_path: gh:scientific-python/cookie
+backend: hatch
+docs: sphinx
+email: lundybernard@gmail.com
+full_name: Lundy Bernard
+license: MIT
+org: lundybernard
+project_name: batconf-tui
+project_short_description: Terminal User Interface for BatConf
+url: https://github.com/lundybernard/batconf-tui
+vcs: true

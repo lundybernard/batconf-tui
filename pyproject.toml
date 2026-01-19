@@ -112,7 +112,9 @@ disallow_incomplete_defs = true
 
 
 [tool.ruff]
-
+line-length = 79
+[tool.ruff.format]
+quote-style = 'single'
 [tool.ruff.lint]
 extend-select = [
   "ARG",    # flake8-unused-arguments
@@ -139,7 +141,7 @@ extend-select = [
   "PT",     # flake8-pytest-style
   "PTH",    # flake8-use-pathlib
   "PYI",    # flake8-pyi
-  "Q",      # flake8-quotes
+  #"Q",      # flake8-quotes
   "RET",    # flake8-return
   "RSE",    # flake8-raise
   "RUF",    # Ruff-specific
@@ -160,7 +162,8 @@ ignore = [
 # typing-modules = ["batconf_tui._compat.typing"]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["T20"]
+"tests/**" = ["T20", 'N805']
+'**/test_*.py' = ['N805']
 "noxfile.py" = ["T20"]
 
 

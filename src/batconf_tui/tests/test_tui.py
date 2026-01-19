@@ -1,7 +1,10 @@
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from textual.widget import Widget
+
 from unittest import TestCase
 from unittest.mock import Mock, patch
-
-from textual.widget import Widget
 
 from ..tui import BatConfApp, run_tui
 
@@ -9,6 +12,8 @@ SRC = 'batconf_tui.tui'
 
 
 class BatConfAppTests(TestCase):
+    """BatConfApp TUI unit tests"""
+
     def test___init__(t) -> None:
         tui = BatConfApp()
 
@@ -29,6 +34,8 @@ class BatConfAppTests(TestCase):
 
 
 class tuiTests(TestCase):
+    """Tests for non-class members of tui.py"""
+
     @patch(f'{SRC}.BatConfApp', autospec=True)
     def test_run_tui(t, BatConfApp: Mock) -> None:
         run_tui()

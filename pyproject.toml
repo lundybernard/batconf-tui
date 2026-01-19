@@ -165,9 +165,9 @@ ignore = [
 # External Tests
 "tests/**" = ["T20", 'N805']
 # Internal (unit) Tests
-'**/test_*.py' = [
+'src/**/test_*.py' = [
   'N805',
-  'UP009',
+  'PT009',
 ]
 "noxfile.py" = ["T20"]
 

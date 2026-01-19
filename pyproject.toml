@@ -177,6 +177,7 @@ py-version = "3.10"
 ignore-paths = [".*/_version.py"]
 reports.output-format = "colorized"
 similarities.ignore-imports = "yes"
+basic.method-arg-name = "self,t"
 messages_control.disable = [
   "design",
   "fixme",

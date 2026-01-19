@@ -162,8 +162,13 @@ ignore = [
 # typing-modules = ["batconf_tui._compat.typing"]
 
 [tool.ruff.lint.per-file-ignores]
+# External Tests
 "tests/**" = ["T20", 'N805']
-'**/test_*.py' = ['N805']
+# Internal (unit) Tests
+'**/test_*.py' = [
+  'N805',
+  'UP009',
+]
 "noxfile.py" = ["T20"]
 
 

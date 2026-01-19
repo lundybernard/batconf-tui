@@ -6,4 +6,4 @@ import batconf_tui as m
 
 
 def test_version():
-    assert importlib.metadata.version("batconf_tui") == m.__version__
+    assert importlib.metadata.version('batconf_tui') == m.__version__

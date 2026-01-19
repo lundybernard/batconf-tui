@@ -1,4 +1,5 @@
 import pytest
+
 from batconf_tui.tui import BatConfApp
 
 
@@ -18,7 +19,7 @@ async def test_quit() -> None:
     tui = BatConfApp()
     async with tui.run_test() as pilot:
         assert tui.is_running
-        await pilot.press("q")
+        await pilot.press('q')
         assert not tui.is_running
 
 
@@ -28,5 +29,5 @@ async def test_welcome_message() -> None:
     async with tui.run_test() as _:
         assert tui.is_running
         # check that mesage is in the DOM
-        msg = tui.query_one("#welcome-message")
+        msg = tui.query_one('#welcome-message')
         assert str(msg.render()) == 'Welcome to BatConf TUI'

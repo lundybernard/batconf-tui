@@ -1,13 +1,14 @@
 from typing import ClassVar
 
 from textual.app import App, ComposeResult
+from textual.binding import BindingType
 from textual.widgets import Static
 
 
 class BatConfApp(App[None]):
     """A Terminal User Interface for BatConf"""
 
-    BINDINGS: ClassVar[list[tuple[str, str, str]]] = [
+    BINDINGS: ClassVar[list[BindingType]] = [
         ('q', 'quit', 'Quit'),
     ]
 

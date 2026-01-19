@@ -177,7 +177,6 @@ py-version = "3.10"
 ignore-paths = [".*/_version.py"]
 reports.output-format = "colorized"
 similarities.ignore-imports = "yes"
-basic.method-arg-name = "self,t"
 messages_control.disable = [
   "design",
   "fixme",
@@ -185,4 +184,7 @@ messages_control.disable = [
   "missing-module-docstring",
   "missing-function-docstring",
   "wrong-import-position",
+  "no-self-argument",          # Allow 't' instead of 'self'
+  "invalid-name",              # Allow 't' and other non-standard names
+  "redefined-outer-name",      # common in tests with mocks
 ]

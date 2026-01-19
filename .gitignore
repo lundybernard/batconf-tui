@@ -113,3 +113,8 @@ venv.bak/
 # === IDE === #
 # pycharm
 .idea/
+
+
+# === Scientific-Python Cookie === #
+# setuptools_scm
+src/*/_version.py

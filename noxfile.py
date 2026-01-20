@@ -122,3 +122,8 @@ def build(session: nox.Session) -> None:
 
     session.install('build')
     session.run('python', '-m', 'build')
+
+
+# Cruft to make sp-repo-review happy
+if __name__ == '__main__':
+    nox.main()

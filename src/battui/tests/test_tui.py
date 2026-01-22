@@ -1,8 +1,3 @@
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from textual.widget import Widget
-
 from unittest import TestCase
 from unittest.mock import Mock, patch
 
@@ -14,23 +9,47 @@ SRC = 'battui.tui'
 class BatConfAppTests(TestCase):
     """BatConfApp TUI unit tests"""
 
-    def test___init__(t) -> None:
-        tui = BatConfApp()
+    Header: Mock
+    Static: Mock
+    Footer: Mock
 
-        t.assertEqual(tui.title, 'BatConfApp')
+    def setUp(t) -> None:  # pylint: disable=arguments-renamed
+        patches = [
+            'Header',
+            'Static',
+            'Footer',
+        ]
+        for target in patches:
+            patcher = patch(f'{SRC}.{target}', autospec=True)
+            setattr(t, target, patcher.start())
+            t.addCleanup(patcher.stop)
+
+        t.tui = BatConfApp()
+        t.widgets = list(t.tui.compose())
+
+    def test___init__(t) -> None:
+        t.assertEqual(t.tui.title, 'BatConf TUI')
 
         # Check bound input keys
-        t.assertIn(('q', 'quit', 'Quit'), tui.BINDINGS)
+        t.assertIn(('q', 'quit', 'Quit'), t.tui.BINDINGS)
 
-    def test_compose(t) -> None:
-        tui = BatConfApp()
-        widgets: dict[str, Widget] = {
-            widget.id: widget
-            for widget in tui.compose()
-            if widget.id is not None
-        }
-        welcome = widgets['welcome-message']
-        t.assertEqual('Welcome to BatConf TUI', welcome.render())
+    def test_header(t) -> None:
+        header = t.widgets[0]
+        t.Header.assert_called_once()
+        t.assertIs(header, t.Header.return_value)
+
+    def test_test_area(t) -> None:
+        text_area = t.widgets[1]
+        t.Static.assert_called_with(
+            content='Welcome to BatConf TUI',
+            id='welcome-message',
+        )
+        t.assertIs(text_area, t.Static.return_value)
+
+    def test_footer(t) -> None:
+        text_area = t.widgets[2]
+        t.Footer.assert_called_once()
+        t.assertIs(text_area, t.Footer.return_value)
 
 
 class tuiTests(TestCase):

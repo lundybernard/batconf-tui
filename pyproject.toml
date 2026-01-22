@@ -36,7 +36,7 @@ dependencies = [
 ]
 
 [project.scripts]
-batui = 'batconf_tui.tui:run_tui'
+batui = 'battui.tui:run_tui'
 
 [project.urls]
 Homepage = "https://github.com/lundybernard/batconf-tui"
@@ -65,7 +65,11 @@ docs = [
 
 [tool.hatch]
 version.source = "vcs"
-build.hooks.vcs.version-file = "src/batconf_tui/_version.py"
+build.hooks.vcs.version-file = "src/battui/_version.py"
+
+[tool.hatch.build.targets.wheel]
+# This tells Hatch exactly which folder in src/ is the package
+packages = ["src/battui"]
 
 [tool.hatch.envs.default]
 dependency-groups = ["dev"]
@@ -90,7 +94,7 @@ testpaths = [
 
 
 [tool.coverage]
-run.source = ["batconf_tui"]
+run.source = ["battui"]
 report.exclude_also = [
     '\.\.\.',
     'if typing.TYPE_CHECKING:',
@@ -107,7 +111,7 @@ disallow_untyped_defs = false
 disallow_incomplete_defs = false
 
 [[tool.mypy.overrides]]
-module = "batconf_tui.*"
+module = "battui.*"
 disallow_untyped_defs = true
 disallow_incomplete_defs = true
 
@@ -160,7 +164,7 @@ ignore = [
     "PLR2004", # Magic value used in comparison
 ]
 # Uncomment if using a _compat.typing backport
-# typing-modules = ["batconf_tui._compat.typing"]
+# typing-modules = ["battui._compat.typing"]
 
 [tool.ruff.lint.per-file-ignores]
 # External Tests

@@ -8,7 +8,7 @@ from unittest.mock import Mock, patch
 
 from ..tui import BatConfApp, run_tui
 
-SRC = 'batconf_tui.tui'
+SRC = 'battui.tui'
 
 
 class BatConfAppTests(TestCase):
@@ -34,7 +34,7 @@ class BatConfAppTests(TestCase):
 
 
 class tuiTests(TestCase):
-    """Tests for non-class members of tui.py"""
+    """Tests for non-class members of battui.py"""
 
     @patch(f'{SRC}.BatConfApp', autospec=True)
     def test_run_tui(t, BatConfApp: Mock) -> None:

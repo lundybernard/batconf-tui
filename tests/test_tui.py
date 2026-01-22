@@ -1,6 +1,6 @@
 import pytest
 
-from batconf_tui.tui import BatConfApp
+from battui.tui import BatConfApp
 
 
 @pytest.mark.asyncio

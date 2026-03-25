@@ -1,6 +1,7 @@
 from importlib import import_module
 from importlib.util import module_from_spec, spec_from_file_location
-from sys import argv
+import sys
+from sys import argv, exit
 from typing import ClassVar
 
 from textual.app import App, BindingType, ComposeResult
@@ -40,7 +41,10 @@ def load_config(path: str) -> BatConfConfig:
             raise ImportError(f'Cannot load file: {module_path}')
     else:
         module = import_module(module_path)
-    return getattr(module, attr)
+    try:
+        return getattr(module, attr)
+    except AttributeError:
+        raise ImportError(f"Cannot find '{attr}' in {module_path}")
 
 
 class BatConfApp(App[None]):
@@ -68,6 +72,10 @@ class BatConfApp(App[None]):
 def run_tui(config_path: str | None = None) -> None:
     if config_path is None and len(argv) > 1:
         config_path = argv[1]
-    config = load_config(config_path) if config_path else None
+    try:
+        config = load_config(config_path) if config_path else None
+    except ImportError as e:
+        sys.stderr.write(f'Error: {e}\n')
+        exit(1)
     tui = BatConfApp(config=config)
     tui.run()

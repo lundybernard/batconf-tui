@@ -42,20 +42,21 @@ class BatConfAppTests(TestCase):
         t.tui = BatConfApp()
         t.widgets = list(t.tui.compose())
 
+        # Input
+        t.config = create_autospec(BatConfConfig)
+
     def test___init__(t) -> None:
         t.assertEqual(t.tui.title, 'BatConf TUI')
 
         # Check bound input keys
         t.assertIn(('q', 'quit', 'Quit'), t.tui.BINDINGS)
 
-    def test___init___config(t) -> None:
-        with t.subTest('defaults to None'):
+        with t.subTest('defaults'):
             t.assertIsNone(t.tui.config)
 
-        with t.subTest('stores provided config'):
-            config = create_autospec(BatConfConfig)
-            tui = BatConfApp(config=config)
-            t.assertIs(tui.config, config)
+        with t.subTest('parameters'):
+            tui = BatConfApp(config=t.config)
+            t.assertIs(tui.config, t.config)
 
     def test_header(t) -> None:
         header = t.widgets[0]

@@ -27,11 +27,17 @@ pip install batconf-tui
 
 ## Usage
 
+Pass a config object using `module::Attr` or `file_path::Attr` syntax:
+
 ```bash
-batui
+# Installed/on-path module
+batui myproject.conf::CFG
+
+# File path (no PYTHONPATH manipulation required)
+batui /path/to/myproject/conf.py::CFG
 ```
 
-This launches the TUI. Press `q` to quit.
+Press `q` to quit.
 
 ## Development
 
@@ -56,7 +62,18 @@ Tests are organized in two layers:
 - `tests/` — end-to-end and integration tests
 - `src/battui/tests/` — isolated unit tests
 
-An example batconf project for manual testing is provided in `tests/example/`.
+### Local QA
+
+A minimal example project is provided in `example/` for manual testing.
+From the project root:
+
+```bash
+batui example/conf.py::CFG
+```
+
+This loads the example config from disk without needing to modify `PYTHONPATH`.
+The example config uses `example/config.ini` as its source and demonstrates
+a two-level schema (`submodule.client`, `clients.clientA`, `clients.clientB`).
 
 ### Nox sessions
 

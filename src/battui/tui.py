@@ -12,9 +12,21 @@ from .types import BatConfConfig
 def load_config(path: str) -> BatConfConfig:
     """Import and return a batconf config object.
 
-    Accepts two formats:
-      - Module path:  'some.module::AttrName'
-      - File path:    '/path/to/conf.py::AttrName'
+    Parameters
+    ----------
+    path : str
+        Location of the config object in ``module::Attr`` format.
+        Two forms are accepted:
+
+        - Module path: ``'some.module::AttrName'`` — imports via
+          :func:`importlib.import_module`.
+        - File path: ``'/path/to/conf.py::AttrName'`` — loads the file
+          directly via :func:`importlib.util.spec_from_file_location`.
+
+    Returns
+    -------
+    BatConfConfig
+        The config object found at the given path.
     """
     module_path, attr = path.split('::')
     if '/' in module_path or module_path.endswith('.py'):

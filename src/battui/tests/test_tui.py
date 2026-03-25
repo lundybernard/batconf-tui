@@ -76,12 +76,43 @@ class BatConfAppTests(TestCase):
         t.Footer.assert_called_once()
         t.assertIs(text_area, t.Footer.return_value)
 
+    def test_compose_with_config(t) -> None:
+        tui = BatConfApp(config=t.config)
+        widgets = list(tui.compose())
+
+        with t.subTest('renders config display widget'):
+            t.Static.assert_called_with(
+                content=str(t.config),
+                id='config-display',
+                markup=False,
+            )
+
+        with t.subTest('config display is in the layout'):
+            t.assertIn(t.Static.return_value, widgets)
+
 
 class tuiTests(TestCase):
     """Tests for non-class members of battui.py"""
 
     @patch(f'{SRC}.BatConfApp', autospec=True)
+    @patch(f'{SRC}.sys.argv', ['batui'])
     def test_run_tui(t, BatConfApp: Mock) -> None:
         run_tui()
-        BatConfApp.assert_called_once()
+        BatConfApp.assert_called_once_with(config=None)
         BatConfApp.return_value.run.assert_called_once()
+
+    @patch(f'{SRC}.load_config')
+    @patch(f'{SRC}.BatConfApp', autospec=True)
+    def test_run_tui_with_config_path(t, BatConfApp: Mock, load_config: Mock) -> None:
+        run_tui(config_path='some.module.CFG')
+        load_config.assert_called_once_with('some.module.CFG')
+        BatConfApp.assert_called_once_with(config=load_config.return_value)
+        BatConfApp.return_value.run.assert_called_once()
+
+    @patch(f'{SRC}.load_config')
+    @patch(f'{SRC}.BatConfApp', autospec=True)
+    @patch(f'{SRC}.sys.argv', ['batui', 'some.module.CFG'])
+    def test_run_tui_reads_config_path_from_argv(t, BatConfApp: Mock, load_config: Mock) -> None:
+        run_tui()
+        load_config.assert_called_once_with('some.module.CFG')
+        BatConfApp.assert_called_once_with(config=load_config.return_value)

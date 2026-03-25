@@ -71,3 +71,15 @@ async def test_app_accepts_config() -> None:
     async with tui.run_test() as _:
         assert tui.is_running
         assert tui.config is CFG
+
+
+@pytest.mark.asyncio
+async def test_config_displayed() -> None:
+    """BatConfApp displays the config's string representation"""
+    from example.project.conf import CFG
+
+    tui = BatConfApp(config=CFG)
+
+    async with tui.run_test() as _:
+        config_view = tui.query_one('#config-display')
+        assert str(config_view.render()) == str(CFG)

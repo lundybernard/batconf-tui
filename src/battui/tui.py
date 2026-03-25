@@ -1,7 +1,6 @@
-
 from importlib import import_module
-from importlib.util import spec_from_file_location, module_from_spec
-import sys
+from importlib.util import module_from_spec, spec_from_file_location
+from sys import argv
 from typing import ClassVar
 
 from textual.app import App, BindingType, ComposeResult
@@ -50,8 +49,8 @@ class BatConfApp(App[None]):
 
 
 def run_tui(config_path: str | None = None) -> None:
-    if config_path is None and len(sys.argv) > 1:
-        config_path = sys.argv[1]
+    if config_path is None and len(argv) > 1:
+        config_path = argv[1]
     config = load_config(config_path) if config_path else None
     tui = BatConfApp(config=config)
     tui.run()

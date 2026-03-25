@@ -10,34 +10,41 @@ SRC = 'battui.tui'
 class LoadConfigTests(TestCase):
     """Unit tests for load_config"""
 
-    @patch(f'{SRC}.import_module', autospec=True)
-    def test_module_path_imports_module(t, import_module: Mock) -> None:
-        load_config('some.module::CFG')
-        import_module.assert_called_once_with('some.module')
+    import_module: Mock
+    spec_from_file_location: Mock
+    module_from_spec: Mock
 
-    @patch(f'{SRC}.import_module', autospec=True)
-    def test_module_path_returns_named_attribute(t, import_module: Mock) -> None:
-        result = load_config('some.module::CFG')
-        t.assertIs(result, import_module.return_value.CFG)
+    def setUp(t) -> None:  # pylint: disable=arguments-renamed
+        for target in ('import_module', 'spec_from_file_location', 'module_from_spec'):
+            patcher = patch(f'{SRC}.{target}', autospec=True)
+            setattr(t, target, patcher.start())
+            t.addCleanup(patcher.stop)
 
-    @patch(f'{SRC}.spec_from_file_location', autospec=True)
-    def test_file_path_loads_from_file(t, spec_from_file_location: Mock) -> None:
-        load_config('/some/path/conf.py::CFG')
-        spec_from_file_location.assert_called_once_with(
+        t.module_config_path = 'some.module::CFG'
+        t.file_config_path = '/some/path/conf.py::CFG'
+
+    def test_module_path_imports_module(t) -> None:
+        load_config(t.module_config_path)
+        t.import_module.assert_called_once_with('some.module')
+        t.spec_from_file_location.assert_not_called()
+
+    def test_module_path_returns_named_attribute(t) -> None:
+        result = load_config(t.module_config_path)
+        t.assertIs(result, t.import_module.return_value.CFG)
+
+    def test_file_path_loads_from_file(t) -> None:
+        load_config(t.file_config_path)
+        t.spec_from_file_location.assert_called_once_with(
             '_batui_config', '/some/path/conf.py'
         )
+        t.import_module.assert_not_called()
 
-    @patch(f'{SRC}.spec_from_file_location', autospec=True)
-    @patch(f'{SRC}.module_from_spec', autospec=True)
-    def test_file_path_returns_named_attribute(
-        t, module_from_spec: Mock,
-         spec_from_file_location: Mock,
-    ) -> None:
-        result = load_config('/some/path/conf.py::CFG')
-        spec_from_file_location.assert_called_with(
-            '_batui_config', '/some/path/conf.py',
+    def test_file_path_returns_named_attribute(t) -> None:
+        result = load_config(t.file_config_path)
+        t.module_from_spec.assert_called_once_with(
+            t.spec_from_file_location.return_value
         )
-        module = module_from_spec.return_value
+        module = t.module_from_spec.return_value
         t.assertIs(result, module.CFG)
 
 
@@ -114,25 +121,30 @@ class BatConfAppTests(TestCase):
 class tuiTests(TestCase):
     """Tests for non-class members of battui.py"""
 
-    @patch(f'{SRC}.BatConfApp', autospec=True)
-    @patch(f'{SRC}.sys.argv', ['batui'])
-    def test_run_tui(t, BatConfApp: Mock) -> None:
-        run_tui()
-        BatConfApp.assert_called_once_with(config=None)
-        BatConfApp.return_value.run.assert_called_once()
+    BatConfApp: Mock
+    load_config: Mock
 
-    @patch(f'{SRC}.load_config')
-    @patch(f'{SRC}.BatConfApp', autospec=True)
-    def test_run_tui_with_config_path(t, BatConfApp: Mock, load_config: Mock) -> None:
-        run_tui(config_path='some.module.CFG')
-        load_config.assert_called_once_with('some.module.CFG')
-        BatConfApp.assert_called_once_with(config=load_config.return_value)
-        BatConfApp.return_value.run.assert_called_once()
+    def setUp(t) -> None:  # pylint: disable=arguments-renamed
+        for target in ('BatConfApp', 'load_config'):
+            patcher = patch(f'{SRC}.{target}', autospec=True)
+            setattr(t, target, patcher.start())
+            t.addCleanup(patcher.stop)
 
-    @patch(f'{SRC}.load_config')
-    @patch(f'{SRC}.BatConfApp', autospec=True)
-    @patch(f'{SRC}.sys.argv', ['batui', 'some.module.CFG'])
-    def test_run_tui_reads_config_path_from_argv(t, BatConfApp: Mock, load_config: Mock) -> None:
+    @patch(f'{SRC}.argv', ['batui'])
+    def test_run_tui(t) -> None:
         run_tui()
-        load_config.assert_called_once_with('some.module.CFG')
-        BatConfApp.assert_called_once_with(config=load_config.return_value)
+        t.load_config.assert_not_called()
+        t.BatConfApp.assert_called_once_with(config=None)
+        t.BatConfApp.return_value.run.assert_called_once()
+
+    def test_run_tui_with_config_path(t) -> None:
+        run_tui(config_path='some.module::CFG')
+        t.load_config.assert_called_once_with('some.module::CFG')
+        t.BatConfApp.assert_called_once_with(config=t.load_config.return_value)
+        t.BatConfApp.return_value.run.assert_called_once()
+
+    @patch(f'{SRC}.argv', ['batui', 'some.module::CFG'])
+    def test_run_tui_reads_config_path_from_argv(t) -> None:
+        run_tui()
+        t.load_config.assert_called_once_with('some.module::CFG')
+        t.BatConfApp.assert_called_once_with(config=t.load_config.return_value)

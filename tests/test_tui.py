@@ -52,13 +52,21 @@ async def test_footer() -> None:
 
 # --- Config loading integration tests ---
 
-def test_load_config_returns_configuration() -> None:
-    """load_config with a dotted path returns the object at that path"""
+def test_load_config_from_module_path() -> None:
+    """load_config with module::attr syntax loads from an installed module"""
     from example.project.conf import CFG
 
-    cfg = load_config('example.project.conf.CFG')
+    cfg = load_config('example.project.conf::CFG')
 
     assert cfg is CFG
+
+
+def test_load_config_from_file_path() -> None:
+    """load_config with file_path::attr syntax loads from a file on disk"""
+    cfg = load_config('example/conf.py::CFG')
+
+    assert cfg is not None
+    assert str(cfg)  # has a meaningful string representation
 
 
 @pytest.mark.asyncio

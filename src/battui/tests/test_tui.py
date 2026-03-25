@@ -10,15 +10,35 @@ SRC = 'battui.tui'
 class LoadConfigTests(TestCase):
     """Unit tests for load_config"""
 
-    @patch(f'{SRC}.importlib.import_module')
-    def test_imports_module_from_dotted_path(t, import_module: Mock) -> None:
-        load_config('some.module.CFG')
+    @patch(f'{SRC}.import_module', autospec=True)
+    def test_module_path_imports_module(t, import_module: Mock) -> None:
+        load_config('some.module::CFG')
         import_module.assert_called_once_with('some.module')
 
-    @patch(f'{SRC}.importlib.import_module')
-    def test_returns_named_attribute(t, import_module: Mock) -> None:
-        result = load_config('some.module.CFG')
+    @patch(f'{SRC}.import_module', autospec=True)
+    def test_module_path_returns_named_attribute(t, import_module: Mock) -> None:
+        result = load_config('some.module::CFG')
         t.assertIs(result, import_module.return_value.CFG)
+
+    @patch(f'{SRC}.spec_from_file_location', autospec=True)
+    def test_file_path_loads_from_file(t, spec_from_file_location: Mock) -> None:
+        load_config('/some/path/conf.py::CFG')
+        spec_from_file_location.assert_called_once_with(
+            '_batui_config', '/some/path/conf.py'
+        )
+
+    @patch(f'{SRC}.spec_from_file_location', autospec=True)
+    @patch(f'{SRC}.module_from_spec', autospec=True)
+    def test_file_path_returns_named_attribute(
+        t, module_from_spec: Mock,
+         spec_from_file_location: Mock,
+    ) -> None:
+        result = load_config('/some/path/conf.py::CFG')
+        spec_from_file_location.assert_called_with(
+            '_batui_config', '/some/path/conf.py',
+        )
+        module = module_from_spec.return_value
+        t.assertIs(result, module.CFG)
 
 
 class BatConfAppTests(TestCase):

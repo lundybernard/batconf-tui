@@ -47,6 +47,22 @@ class LoadConfigTests(TestCase):
         module = t.module_from_spec.return_value
         t.assertIs(result, module.CFG)
 
+    def test_file_path_raises_import_error_when_spec_is_none(t) -> None:
+        t.spec_from_file_location.return_value = None
+        with t.assertRaises(ImportError):
+            load_config(t.file_config_path)
+
+    def test_file_path_raises_import_error_when_loader_is_none(t) -> None:
+        t.spec_from_file_location.return_value.loader = None
+        with t.assertRaises(ImportError):
+            load_config(t.file_config_path)
+
+    def test_file_path_raises_import_error_when_file_not_found(t) -> None:
+        spec = t.spec_from_file_location.return_value
+        spec.loader.exec_module.side_effect = FileNotFoundError
+        with t.assertRaises(ImportError):
+            load_config(t.file_config_path)
+
 
 class BatConfAppTests(TestCase):
     """BatConfApp TUI unit tests"""

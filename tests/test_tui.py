@@ -69,6 +69,12 @@ def test_load_config_from_file_path() -> None:
     assert str(cfg)  # has a meaningful string representation
 
 
+def test_load_config_bad_file_path_raises_import_error() -> None:
+    """load_config raises ImportError with a clear message for a bad file path"""
+    with pytest.raises(ImportError, match='Cannot load file: /no/such/conf.py'):
+        load_config('/no/such/conf.py::CFG')
+
+
 @pytest.mark.asyncio
 async def test_app_accepts_config() -> None:
     """BatConfApp stores the config object passed at init"""

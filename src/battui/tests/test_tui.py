@@ -1,9 +1,24 @@
 from unittest import TestCase
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, create_autospec, patch
 
-from ..tui import BatConfApp, run_tui
+from ..tui import BatConfApp, load_config, run_tui
+from ..types import BatConfConfig
 
 SRC = 'battui.tui'
+
+
+class LoadConfigTests(TestCase):
+    """Unit tests for load_config"""
+
+    @patch(f'{SRC}.importlib.import_module')
+    def test_imports_module_from_dotted_path(t, import_module: Mock) -> None:
+        load_config('some.module.CFG')
+        import_module.assert_called_once_with('some.module')
+
+    @patch(f'{SRC}.importlib.import_module')
+    def test_returns_named_attribute(t, import_module: Mock) -> None:
+        result = load_config('some.module.CFG')
+        t.assertIs(result, import_module.return_value.CFG)
 
 
 class BatConfAppTests(TestCase):
@@ -32,6 +47,15 @@ class BatConfAppTests(TestCase):
 
         # Check bound input keys
         t.assertIn(('q', 'quit', 'Quit'), t.tui.BINDINGS)
+
+    def test___init___config(t) -> None:
+        with t.subTest('defaults to None'):
+            t.assertIsNone(t.tui.config)
+
+        with t.subTest('stores provided config'):
+            config = create_autospec(BatConfConfig)
+            tui = BatConfApp(config=config)
+            t.assertIs(tui.config, config)
 
     def test_header(t) -> None:
         header = t.widgets[0]

@@ -1,6 +1,6 @@
 import pytest
 
-from battui.tui import BatConfApp, Footer, Header, load_config
+from battui.tui import BatConfApp, Footer, Header, load_config, run_tui
 
 
 @pytest.mark.asyncio
@@ -73,6 +73,30 @@ def test_load_config_bad_file_path_raises_import_error() -> None:
     """load_config raises ImportError with a clear message for a bad file path"""
     with pytest.raises(ImportError, match='Cannot load file: /no/such/conf.py'):
         load_config('/no/such/conf.py::CFG')
+
+
+def test_load_config_bad_attr_raises_import_error() -> None:
+    """load_config raises ImportError with a clear message for a missing attribute"""
+    with pytest.raises(ImportError, match="Cannot find 'not_CFG' in example/conf.py"):
+        load_config('example/conf.py::not_CFG')
+
+
+def test_run_tui_bad_config_path_exits_with_error(capsys: pytest.CaptureFixture) -> None:
+    """run_tui prints a friendly error and exits cleanly on a bad config path"""
+    with pytest.raises(SystemExit) as exc_info:
+        run_tui(config_path='/no/such/conf.py::CFG')
+
+    assert exc_info.value.code != 0
+    assert 'Cannot load file: /no/such/conf.py' in capsys.readouterr().err
+
+
+def test_run_tui_bad_attr_exits_with_error(capsys: pytest.CaptureFixture) -> None:
+    """run_tui prints a friendly error and exits cleanly when the attr doesn't exist"""
+    with pytest.raises(SystemExit) as exc_info:
+        run_tui(config_path='example/conf.py::not_CFG')
+
+    assert exc_info.value.code != 0
+    assert "Cannot find 'not_CFG' in example/conf.py" in capsys.readouterr().err
 
 
 @pytest.mark.asyncio

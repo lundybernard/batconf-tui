@@ -1,3 +1,4 @@
+import io
 from unittest import TestCase
 from unittest.mock import Mock, create_autospec, patch
 
@@ -46,6 +47,11 @@ class LoadConfigTests(TestCase):
         )
         module = t.module_from_spec.return_value
         t.assertIs(result, module.CFG)
+
+    def test_raises_import_error_when_attr_not_found(t) -> None:
+        t.import_module.return_value = Mock(spec=[])  # no attributes
+        with t.assertRaises(ImportError, msg="Cannot find 'CFG' in some.module"):
+            load_config(t.module_config_path)
 
     def test_file_path_raises_import_error_when_spec_is_none(t) -> None:
         t.spec_from_file_location.return_value = None
@@ -164,3 +170,13 @@ class tuiTests(TestCase):
         run_tui()
         t.load_config.assert_called_once_with('some.module::CFG')
         t.BatConfApp.assert_called_once_with(config=t.load_config.return_value)
+
+    @patch(f'{SRC}.sys.stderr')
+    def test_run_tui_import_error_exits_with_message(t, stderr: Mock) -> None:
+        t.load_config.side_effect = ImportError('Cannot load file: /bad/conf.py')
+        with t.assertRaises(SystemExit) as ctx:
+            run_tui(config_path='/bad/conf.py::CFG')
+        t.assertNotEqual(ctx.exception.code, 0)
+        stderr.write.assert_called_once_with(
+            'Error: Cannot load file: /bad/conf.py\n'
+        )

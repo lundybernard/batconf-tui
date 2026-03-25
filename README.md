@@ -13,6 +13,60 @@
 
 <!-- SPHINX-START -->
 
+A Terminal User Interface for exploring [batconf](https://github.com/lundybernard/batconf) configuration in your projects.
+
+## Overview
+
+`batconf-tui` lets you interactively browse the configuration tree of a batconf-managed project — viewing resolved values, their sources (CLI args, environment variables, config files), and the full schema hierarchy.
+
+## Installation
+
+```bash
+pip install batconf-tui
+```
+
+## Usage
+
+```bash
+batui
+```
+
+This launches the TUI. Press `q` to quit.
+
+## Development
+
+### Setup
+
+```bash
+pip install -e ".[dev]"
+```
+
+### Running tests
+
+```bash
+# All tests
+pytest
+
+# With coverage
+pytest --cov=battui
+```
+
+Tests are organized in two layers:
+
+- `tests/` — end-to-end and integration tests
+- `src/battui/tests/` — isolated unit tests
+
+An example batconf project for manual testing is provided in `tests/example/`.
+
+### Nox sessions
+
+```bash
+nox -l          # list available sessions
+nox -s tests    # run tests
+```
+
+<!-- SPHINX-END -->
+
 <!-- prettier-ignore-start -->
 [actions-badge]:            https://github.com/lundybernard/batconf-tui/workflows/CI/badge.svg
 [actions-link]:             https://github.com/lundybernard/batconf-tui/actions

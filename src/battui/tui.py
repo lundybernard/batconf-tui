@@ -31,8 +31,13 @@ def load_config(path: str) -> BatConfConfig:
     module_path, attr = path.split('::')
     if '/' in module_path or module_path.endswith('.py'):
         spec = spec_from_file_location('_batui_config', module_path)
+        if spec is None or spec.loader is None:
+            raise ImportError(f'Cannot load file: {module_path}')
         module = module_from_spec(spec)
-        spec.loader.exec_module(module)  # type: ignore[union-attr]
+        try:
+            spec.loader.exec_module(module)
+        except FileNotFoundError:
+            raise ImportError(f'Cannot load file: {module_path}')
     else:
         module = import_module(module_path)
     return getattr(module, attr)

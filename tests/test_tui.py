@@ -1,6 +1,6 @@
 import pytest
 
-from battui.tui import BatConfApp, Footer, Header
+from battui.tui import BatConfApp, Footer, Header, load_config
 
 
 @pytest.mark.asyncio
@@ -48,3 +48,26 @@ async def test_footer() -> None:
     async with tui.run_test() as _:
         footer = tui.query_one(Footer)
         assert footer is not None
+
+
+# --- Config loading integration tests ---
+
+def test_load_config_returns_configuration() -> None:
+    """load_config with a dotted path returns the object at that path"""
+    from example.project.conf import CFG
+
+    cfg = load_config('example.project.conf.CFG')
+
+    assert cfg is CFG
+
+
+@pytest.mark.asyncio
+async def test_app_accepts_config() -> None:
+    """BatConfApp stores the config object passed at init"""
+    from example.project.conf import CFG
+
+    tui = BatConfApp(config=CFG)
+
+    async with tui.run_test() as _:
+        assert tui.is_running
+        assert tui.config is CFG

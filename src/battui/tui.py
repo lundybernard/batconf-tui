@@ -1,4 +1,6 @@
-import importlib
+
+from importlib import import_module
+from importlib.util import spec_from_file_location, module_from_spec
 import sys
 from typing import ClassVar
 
@@ -8,13 +10,20 @@ from textual.widgets import Footer, Header, Static
 from .types import BatConfConfig
 
 
-def load_config(dotted_path: str) -> BatConfConfig:
-    """Import and return a batconf Configuration from a dotted path.
+def load_config(path: str) -> BatConfConfig:
+    """Import and return a batconf config object.
 
-    Example: load_config('project.conf.CFG')
+    Accepts two formats:
+      - Module path:  'some.module::AttrName'
+      - File path:    '/path/to/conf.py::AttrName'
     """
-    module_path, attr = dotted_path.rsplit('.', 1)
-    module = importlib.import_module(module_path)
+    module_path, attr = path.split('::')
+    if '/' in module_path or module_path.endswith('.py'):
+        spec = spec_from_file_location('_batui_config', module_path)
+        module = module_from_spec(spec)
+        spec.loader.exec_module(module)  # type: ignore[union-attr]
+    else:
+        module = import_module(module_path)
     return getattr(module, attr)
 
 

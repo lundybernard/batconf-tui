@@ -1,4 +1,5 @@
 import importlib
+import sys
 from typing import ClassVar
 
 from textual.app import App, BindingType, ComposeResult
@@ -32,10 +33,16 @@ class BatConfApp(App[None]):
 
     def compose(self) -> ComposeResult:
         yield Header()
-        yield Static(content='Welcome to BatConf TUI', id='welcome-message')
+        if self.config is not None:
+            yield Static(content=str(self.config), id='config-display', markup=False)
+        else:
+            yield Static(content='Welcome to BatConf TUI', id='welcome-message')
         yield Footer()
 
 
-def run_tui() -> None:
-    tui = BatConfApp()
+def run_tui(config_path: str | None = None) -> None:
+    if config_path is None and len(sys.argv) > 1:
+        config_path = sys.argv[1]
+    config = load_config(config_path) if config_path else None
+    tui = BatConfApp(config=config)
     tui.run()

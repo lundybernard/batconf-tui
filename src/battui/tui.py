@@ -1,6 +1,6 @@
+import sys
 from importlib import import_module
 from importlib.util import module_from_spec, spec_from_file_location
-import sys
 from sys import argv, exit
 from typing import ClassVar
 
@@ -8,6 +8,51 @@ from textual.app import App, BindingType, ComposeResult
 from textual.widgets import Footer, Header, Static
 
 from .types import BatConfConfig
+
+
+def _load_module_from_file(module_path: str):
+    """Load a Python module from a file path.
+
+    Parameters
+    ----------
+    module_path : str
+        Absolute or relative path to the ``.py`` file.
+
+    Returns
+    -------
+    types.ModuleType
+        The loaded module.
+
+    Raises
+    ------
+    ImportError
+        If the file cannot be found or the spec cannot be created.
+    """
+    spec = spec_from_file_location('_batui_config', module_path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f'Cannot load file: {module_path}')
+    module = module_from_spec(spec)
+    try:
+        spec.loader.exec_module(module)
+    except FileNotFoundError as err:
+        raise ImportError(f'Cannot load file: {module_path}') from err
+    return module
+
+
+def _load_module_from_module_path(module_path: str):
+    """Load a Python module by its dotted module path.
+
+    Parameters
+    ----------
+    module_path : str
+        Dotted module path, e.g. ``'some.module'``.
+
+    Returns
+    -------
+    types.ModuleType
+        The imported module.
+    """
+    return import_module(module_path)
 
 
 def load_config(path: str) -> BatConfConfig:
@@ -28,19 +73,18 @@ def load_config(path: str) -> BatConfConfig:
     -------
     BatConfConfig
         The config object found at the given path.
+
+    Raises
+    ------
+    ImportError
+        If the module or file cannot be loaded, or the named attribute does
+        not exist.
     """
     module_path, attr = path.split('::')
     if '/' in module_path or module_path.endswith('.py'):
-        spec = spec_from_file_location('_batui_config', module_path)
-        if spec is None or spec.loader is None:
-            raise ImportError(f'Cannot load file: {module_path}')
-        module = module_from_spec(spec)
-        try:
-            spec.loader.exec_module(module)
-        except FileNotFoundError:
-            raise ImportError(f'Cannot load file: {module_path}')
+        module = _load_module_from_file(module_path)
     else:
-        module = import_module(module_path)
+        module = _load_module_from_module_path(module_path)
     try:
         return getattr(module, attr)
     except AttributeError:
@@ -63,9 +107,13 @@ class BatConfApp(App[None]):
     def compose(self) -> ComposeResult:
         yield Header()
         if self.config is not None:
-            yield Static(content=str(self.config), id='config-display', markup=False)
+            yield Static(
+                content=str(self.config), id='config-display', markup=False
+            )
         else:
-            yield Static(content='Welcome to BatConf TUI', id='welcome-message')
+            yield Static(
+                content='Welcome to BatConf TUI', id='welcome-message'
+            )
         yield Footer()
 
 

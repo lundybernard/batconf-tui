@@ -1,14 +1,7 @@
 from unittest import TestCase
 from unittest.mock import Mock, create_autospec, patch
 
-from ..tui import (
-    BatConfApp,
-    ConfigLoader,
-    _load_module_from_file,
-    _load_module_from_module_path,
-    load_config,
-    run_tui,
-)
+from ..tui import BatConfApp, ConfigLoader, run_tui
 from ..types import BatConfConfig
 
 SRC = 'battui.tui'
@@ -114,120 +107,6 @@ class ConfigLoaderTests(TestCase):
                 _ = loader.config
 
 
-class LoadModuleFromFileTests(TestCase):
-    """Unit tests for _load_module_from_file"""
-
-    spec_from_file_location: Mock
-    module_from_spec: Mock
-
-    def setUp(t) -> None:  # pylint: disable=arguments-renamed
-        for target in ('spec_from_file_location', 'module_from_spec'):
-            patcher = patch(f'{SRC}.{target}', autospec=True)
-            setattr(t, target, patcher.start())
-            t.addCleanup(patcher.stop)
-
-        t.module_path = '/some/path/conf.py'
-
-    def test_loads_spec_from_file(t) -> None:
-        _load_module_from_file(t.module_path)
-        t.spec_from_file_location.assert_called_once_with(
-            '_batui_config', t.module_path
-        )
-
-    def test_returns_module(t) -> None:
-        result = _load_module_from_file(t.module_path)
-        t.module_from_spec.assert_called_once_with(
-            t.spec_from_file_location.return_value
-        )
-        t.assertIs(result, t.module_from_spec.return_value)
-
-    def test_raises_import_error_when_spec_is_none(t) -> None:
-        t.spec_from_file_location.return_value = None
-        with t.assertRaises(
-            ImportError, msg='Cannot load file: /some/path/conf.py'
-        ):
-            _load_module_from_file(t.module_path)
-
-    def test_raises_import_error_when_loader_is_none(t) -> None:
-        t.spec_from_file_location.return_value.loader = None
-        with t.assertRaises(
-            ImportError, msg='Cannot load file: /some/path/conf.py'
-        ):
-            _load_module_from_file(t.module_path)
-
-    def test_raises_import_error_when_file_not_found(t) -> None:
-        spec = t.spec_from_file_location.return_value
-        spec.loader.exec_module.side_effect = FileNotFoundError
-        with t.assertRaises(
-            ImportError, msg='Cannot load file: /some/path/conf.py'
-        ):
-            _load_module_from_file(t.module_path)
-
-
-class LoadModuleFromModulePathTests(TestCase):
-    """Unit tests for _load_module_from_module_path"""
-
-    import_module: Mock
-
-    def setUp(t) -> None:  # pylint: disable=arguments-renamed
-        patcher = patch(f'{SRC}.import_module', autospec=True)
-        t.import_module = patcher.start()
-        t.addCleanup(patcher.stop)
-
-    def test_imports_module(t) -> None:
-        _load_module_from_module_path('some.module')
-        t.import_module.assert_called_once_with('some.module')
-
-    def test_returns_module(t) -> None:
-        result = _load_module_from_module_path('some.module')
-        t.assertIs(result, t.import_module.return_value)
-
-
-class LoadConfigTests(TestCase):
-    """Unit tests for load_config"""
-
-    _load_module_from_file: Mock
-    _load_module_from_module_path: Mock
-
-    def setUp(t) -> None:  # pylint: disable=arguments-renamed
-        for target in (
-            '_load_module_from_file',
-            '_load_module_from_module_path',
-        ):
-            patcher = patch(f'{SRC}.{target}', autospec=True)
-            setattr(t, target, patcher.start())
-            t.addCleanup(patcher.stop)
-
-        t.module_config_path = 'some.module::CFG'
-        t.file_config_path = '/some/path/conf.py::CFG'
-
-    def test_module_path_delegates_to_load_module_from_module_path(t) -> None:
-        load_config(t.module_config_path)
-        t._load_module_from_module_path.assert_called_once_with('some.module')
-        t._load_module_from_file.assert_not_called()
-
-    def test_module_path_returns_named_attribute(t) -> None:
-        result = load_config(t.module_config_path)
-        t.assertIs(result, t._load_module_from_module_path.return_value.CFG)
-
-    def test_file_path_delegates_to_load_module_from_file(t) -> None:
-        load_config(t.file_config_path)
-        t._load_module_from_file.assert_called_once_with('/some/path/conf.py')
-        t._load_module_from_module_path.assert_not_called()
-
-    def test_file_path_returns_named_attribute(t) -> None:
-        result = load_config(t.file_config_path)
-        t.assertIs(result, t._load_module_from_file.return_value.CFG)
-
-    def test_raises_import_error_when_attr_not_found(t) -> None:
-        t._load_module_from_module_path.return_value = Mock(
-            spec=[]
-        )  # no attributes
-        with t.assertRaises(
-            ImportError, msg="Cannot find 'CFG' in some.module"
-        ):
-            load_config(t.module_config_path)
-
 
 class BatConfAppTests(TestCase):
     """BatConfApp TUI unit tests"""
@@ -303,10 +182,10 @@ class tuiTests(TestCase):
     """Tests for non-class members of battui.py"""
 
     BatConfApp: Mock
-    load_config: Mock
+    ConfigLoader: Mock
 
     def setUp(t) -> None:  # pylint: disable=arguments-renamed
-        for target in ('BatConfApp', 'load_config'):
+        for target in ('BatConfApp', 'ConfigLoader'):
             patcher = patch(f'{SRC}.{target}', autospec=True)
             setattr(t, target, patcher.start())
             t.addCleanup(patcher.stop)
@@ -314,25 +193,29 @@ class tuiTests(TestCase):
     @patch(f'{SRC}.argv', ['batui'])
     def test_run_tui(t) -> None:
         run_tui()
-        t.load_config.assert_not_called()
+        t.ConfigLoader.assert_not_called()
         t.BatConfApp.assert_called_once_with(config=None)
         t.BatConfApp.return_value.run.assert_called_once()
 
     def test_run_tui_with_config_path(t) -> None:
         run_tui(config_path='some.module::CFG')
-        t.load_config.assert_called_once_with('some.module::CFG')
-        t.BatConfApp.assert_called_once_with(config=t.load_config.return_value)
+        t.ConfigLoader.assert_called_once_with('some.module::CFG')
+        t.BatConfApp.assert_called_once_with(
+            config=t.ConfigLoader.return_value.config
+        )
         t.BatConfApp.return_value.run.assert_called_once()
 
     @patch(f'{SRC}.argv', ['batui', 'some.module::CFG'])
     def test_run_tui_reads_config_path_from_argv(t) -> None:
         run_tui()
-        t.load_config.assert_called_once_with('some.module::CFG')
-        t.BatConfApp.assert_called_once_with(config=t.load_config.return_value)
+        t.ConfigLoader.assert_called_once_with('some.module::CFG')
+        t.BatConfApp.assert_called_once_with(
+            config=t.ConfigLoader.return_value.config
+        )
 
     @patch(f'{SRC}.sys.stderr')
     def test_run_tui_import_error_exits_with_message(t, stderr: Mock) -> None:
-        t.load_config.side_effect = ImportError(
+        t.ConfigLoader.side_effect = ImportError(
             'Cannot load file: /bad/conf.py'
         )
         with t.assertRaises(SystemExit) as ctx:

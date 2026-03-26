@@ -1,6 +1,6 @@
 import pytest
 
-from battui.tui import BatConfApp, ConfigLoader, Footer, Header, load_config, run_tui
+from battui.tui import BatConfApp, ConfigLoader, Footer, Header, run_tui
 
 # === UI tests === #
 
@@ -94,37 +94,6 @@ class TestConfigLoader:
             ImportError, match="Cannot find 'not_CFG' in example/conf.py"
         ):
             ConfigLoader(config_path='example/conf.py::not_CFG').config
-
-
-# === load_config tests === #
-
-
-class TestLoadConfig:
-    """load_config integration tests"""
-
-    def test_from_module_path(self) -> None:
-        """module::attr syntax loads from an installed module"""
-        from example.project.conf import CFG
-
-        assert load_config('example.project.conf::CFG') is CFG
-
-    def test_from_file_path(self) -> None:
-        """file_path::attr syntax loads from a file on disk"""
-        cfg = load_config('example/conf.py::CFG')
-        assert cfg is not None
-        assert str(cfg)
-
-    def test_bad_file_path_raises_import_error(self) -> None:
-        with pytest.raises(
-            ImportError, match='Cannot load file: /no/such/conf.py'
-        ):
-            load_config('/no/such/conf.py::CFG')
-
-    def test_bad_attr_raises_import_error(self) -> None:
-        with pytest.raises(
-            ImportError, match="Cannot find 'not_CFG' in example/conf.py"
-        ):
-            load_config('example/conf.py::not_CFG')
 
 
 # === run_tui tests === #

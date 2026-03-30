@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 
-
 KEY2_DEFAULT = 'DEFAULT VALUE'
 
 
@@ -34,5 +33,5 @@ class MyClient:
         self.key1 = key1
         self.key2 = key2
 
-    def fetch_data(self):
+    def fetch_data(self) -> str:
         return f'MyClient data: {self.key1=}, {self.key2=}'

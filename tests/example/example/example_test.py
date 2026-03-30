@@ -1,35 +1,31 @@
-from unittest import TestCase, skipIf
-from unittest.mock import patch, Mock
-
-from os import path, environ
-from contextlib import contextmanager
 from argparse import Namespace
+from contextlib import contextmanager
+from importlib.util import find_spec
+from os import environ, path
+from unittest import TestCase, skipIf
+from unittest.mock import Mock, patch
 
+from batconf.sources.yaml import YamlConfig
+from project.cli import BATCLI
 from project.conf import (
-    get_config,
-    ProjectConfigSchema,
-    SubmoduleConfigSchema,
+    CFG as GLOBAL_CFG,
+)
+from project.conf import (
     CONFIG_FILE_NAME,
     NamespaceConfig,
-    CFG as GLOBAL_CFG,
+    ProjectConfigSchema,
+    SubmoduleConfigSchema,
+    get_config,
     insert_source,
 )
-from project.cli import BATCLI
 from project.lib import (
-    hello_world,
     get_data_from_server,
     get_data_from_server_config,
+    hello_world,
 )
 from project.submodule.client import KEY2_DEFAULT
 
-from batconf.sources.yaml import YamlConfig
-
-
-_PYYAML_INSTALLED = True
-try:
-    import yaml
-except ImportError:
-    _PYYAML_INSTALLED = False
+_PYYAML_INSTALLED = find_spec('yaml') is not None
 
 # Get the absolute path to the test config.ini and .yaml files
 example_dir = path.dirname(path.realpath(__file__))
@@ -197,7 +193,7 @@ class GetIniConfigFunctionTests(TestCase):
 
         args = Namespace()
         setattr(args, 'project.submodule.client.key2', 'cli override')
-        setattr(args, 'cli_only_option', 'cli option')
+        args.cli_only_option = 'cli option'
         setattr(args, 'project.opt', 'cfg root value')
 
         cfg = get_config(cli_args=args)
@@ -227,7 +223,7 @@ class CLITests(TestCase):
 
     @patch(f'{SRC}.exit', autospec=True)
     def test_hello_world(t, exit: Mock):
-        ARGS = 'hello'.split(' ')
+        ARGS = ['hello']
 
         with patch('builtins.print') as mock_print:
             BATCLI(ARGS=ARGS)
@@ -240,11 +236,12 @@ class CLITests(TestCase):
         """Options passed in from the CLI
         should override values from other sources
         """
-        ARGS = (
-            'fetch-data clientA'
-            ' project.client.clientA.key1=cli-key1'
-            ' project.client.clientA.key2=cli-key2'
-        ).split(' ')
+        ARGS = [
+            'fetch-data',
+            'clientA',
+            'project.client.clientA.key1=cli-key1',
+            'project.client.clientA.key2=cli-key2',
+        ]
 
         with patch('builtins.print') as mock_print:
             BATCLI(ARGS=ARGS)

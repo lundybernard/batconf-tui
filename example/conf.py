@@ -1,9 +1,12 @@
-from collections.abc import Sequence
+from __future__ import annotations
 
 # === Configuration Schema === #
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 from batconf.manager import ConfigProtocol, Configuration
 from batconf.source import SourceInterface, SourceList
@@ -73,11 +76,7 @@ def get_config(
     config_sources: Sequence[SourceInterface | None] = [
         NamespaceConfig(cli_args) if cli_args else None,
         EnvConfig(),
-        (
-            config_file
-            if config_file
-            else IniConfig(config_file_name, config_env=config_env)
-        ),
+        (config_file or IniConfig(config_file_name, config_env=config_env)),
     ]
 
     source_list = SourceList(config_sources)

@@ -1,17 +1,16 @@
-from typing import Sequence
-
-from sys import exit
 import logging
-from argparse import ArgumentParser, Namespace, Action
+from argparse import Action, ArgumentParser, Namespace
+from collections.abc import Callable, Sequence
+from sys import exit
 
+from .conf import CFG, NamespaceConfig, insert_source
 from .lib import (
-    hello_world,
     get_config_str,
     get_data_from_server,
-    get_opt,
     get_data_from_server_config,
+    get_opt,
+    hello_world,
 )
-from .conf import CFG, NamespaceConfig, insert_source
 
 log = logging.getLogger('root')
 
@@ -33,7 +32,7 @@ def BATCLI(ARGS: Sequence[str] | None = None):
     exit(0)
 
 
-def argparser():
+def argparser() -> ArgumentParser:
     p = ArgumentParser(
         description='Utility for executing various bat tasks',
         usage='bat [<args>] <command>',
@@ -77,7 +76,7 @@ def argparser():
     commands = p.add_subparsers(
         dest='command',
         title='commands',
-        description='for additonal details on each command use: '
+        description='for additional details on each command use: '
         '"bat {command name} --help"',
     )
     # hello args
@@ -138,8 +137,8 @@ def argparser():
     return p
 
 
-def get_help(parser):
-    def help(_: Namespace):
+def get_help(parser: ArgumentParser) -> Callable[[Namespace], None]:
+    def help(_: Namespace) -> None:
         parser.print_help()
 
     return help
@@ -225,7 +224,7 @@ def _parse_overrides(args: Namespace) -> Namespace:
 
 class FilterHelp(Action):
     """
-    Used when collecting arbitrary arguments from a comand
+    Used when collecting arbitrary arguments from a command
     This filters out the help command, so it behaves as expected.
     """
 

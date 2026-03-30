@@ -1,7 +1,6 @@
-from unittest import TestCase
-
-from os import environ
 from concurrent.futures import ThreadPoolExecutor
+from os import environ
+from unittest import TestCase
 
 from project.conf import get_config
 from project.submodule.client import MyClient
@@ -27,7 +26,7 @@ class ThreadSafetyTests(TestCase):
 
         def worker(thread_id):
             # hammer the cfg object
-            for i in range(10):
+            for _ in range(10):
                 # read values off of the Configuration object many times
                 t.assertEqual(cfg.submodule.client.key2, 'override_value')
                 t.assertEqual(
@@ -48,10 +47,7 @@ class ThreadSafetyTests(TestCase):
             return client.fetch_data()
 
         with ThreadPoolExecutor(max_workers=10) as executor:
-            futures = [
-                executor.submit(worker, i)  #
-                for i in range(20)  #
-            ]
+            futures = [executor.submit(worker, i) for i in range(20)]
             for future in futures:
                 ret = future.result()
                 print(ret)

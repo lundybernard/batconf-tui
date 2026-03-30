@@ -102,8 +102,6 @@ report.exclude_also = [
 
 [tool.mypy]
 files = ["src", "tests"]
-mypy_path = ["tests/example"]
-explicit_package_bases = true
 python_version = "3.10"
 warn_unused_configs = true
 strict = true
@@ -117,10 +115,6 @@ disallow_incomplete_defs = false
 module = "battui.*"
 disallow_untyped_defs = true
 disallow_incomplete_defs = true
-
-[[tool.mypy.overrides]]
-module = "batconf.*"
-ignore_missing_imports = true
 
 
 [tool.ruff]
@@ -177,15 +171,6 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 # External Tests
 "tests/**" = ["T20", 'N805']
-# Example project: intentional style choices (os.path, TestCase assertions, lazy imports)
-"tests/example/**" = [
-    "ARG",     # CLI callbacks require specific signatures
-    "PLC0415", # Intentional lazy/conditional imports in tests
-    "PT009",   # Example uses TestCase-style assertions
-    "PT027",   # Example uses assertRaises
-    "PTH",     # Example uses os.path intentionally
-    "SIM117",  # Nested with statements are clearer in example code
-]
 # Internal (unit) Tests
 'src/**/test_*.py' = [
     'N805',

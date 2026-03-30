@@ -48,7 +48,7 @@ class TestBatConfAppWithConfig:
 
     @pytest.fixture(autouse=True)
     def cfg(self):
-        from example.project.conf import CFG  # noqa: PLC0415
+        from example.conf import CFG  # noqa: PLC0415
 
         self.cfg = CFG
 
@@ -75,11 +75,9 @@ class TestConfigLoader:
 
     def test_from_module_path(self) -> None:
         """module::attr syntax loads from an installed module"""
-        from example.project.conf import CFG  # noqa: PLC0415
+        from example.conf import CFG  # noqa: PLC0415
 
-        assert (
-            ConfigLoader(config_path='example.project.conf::CFG').config is CFG
-        )
+        assert ConfigLoader(config_path='example.conf::CFG').config is CFG
 
     def test_from_file_path(self) -> None:
         """file_path::attr syntax loads from a file on disk"""

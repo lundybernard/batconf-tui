@@ -48,7 +48,7 @@ class TestBatConfAppWithConfig:
 
     @pytest.fixture(autouse=True)
     def cfg(self):
-        from example.project.conf import CFG
+        from example.project.conf import CFG  # noqa: PLC0415
 
         self.cfg = CFG
 
@@ -75,9 +75,11 @@ class TestConfigLoader:
 
     def test_from_module_path(self) -> None:
         """module::attr syntax loads from an installed module"""
-        from example.project.conf import CFG
+        from example.project.conf import CFG  # noqa: PLC0415
 
-        assert ConfigLoader(config_path='example.project.conf::CFG').config is CFG
+        assert (
+            ConfigLoader(config_path='example.project.conf::CFG').config is CFG
+        )
 
     def test_from_file_path(self) -> None:
         """file_path::attr syntax loads from a file on disk"""
@@ -86,14 +88,16 @@ class TestConfigLoader:
         assert str(cfg)
 
     def test_bad_file_path_raises_import_error(self) -> None:
-        with pytest.raises(ImportError, match='Cannot load file: /no/such/conf.py'):
-            ConfigLoader(config_path='/no/such/conf.py::CFG').config
+        with pytest.raises(
+            ImportError, match=r'Cannot load file: /no/such/conf\.py'
+        ):
+            _ = ConfigLoader(config_path='/no/such/conf.py::CFG').config
 
     def test_bad_attr_raises_import_error(self) -> None:
         with pytest.raises(
-            ImportError, match="Cannot find 'not_CFG' in example/conf.py"
+            ImportError, match=r"Cannot find 'not_CFG' in example/conf\.py"
         ):
-            ConfigLoader(config_path='example/conf.py::not_CFG').config
+            _ = ConfigLoader(config_path='example/conf.py::not_CFG').config
 
 
 # === run_tui tests === #
@@ -103,7 +107,7 @@ class TestRunTui:
     """run_tui CLI error handling"""
 
     def test_bad_config_path_exits_with_error(
-        self, capsys: pytest.CaptureFixture
+        self, capsys: pytest.CaptureFixture[str]
     ) -> None:
         with pytest.raises(SystemExit) as exc_info:
             run_tui(config_path='/no/such/conf.py::CFG')
@@ -111,7 +115,7 @@ class TestRunTui:
         assert 'Cannot load file: /no/such/conf.py' in capsys.readouterr().err
 
     def test_bad_attr_exits_with_error(
-        self, capsys: pytest.CaptureFixture
+        self, capsys: pytest.CaptureFixture[str]
     ) -> None:
         with pytest.raises(SystemExit) as exc_info:
             run_tui(config_path='example/conf.py::not_CFG')

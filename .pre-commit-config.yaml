@@ -25,6 +25,7 @@ repos:
       - id: mixed-line-ending
       - id: name-tests-test
         args: ['--pytest-test-first']
+        exclude: ^tests/example/
       - id: requirements-txt-fixer
       - id: trailing-whitespace
 
@@ -56,9 +57,11 @@ repos:
         files: src|tests|noxfile.py
         args: []
         additional_dependencies:
+          - batconf
           - nox
           - pytest
           - textual
+          - types-PyYAML
 
   - repo: https://github.com/codespell-project/codespell
     rev: 'v2.4.1'

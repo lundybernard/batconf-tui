@@ -102,6 +102,7 @@ report.exclude_also = [
 
 [tool.mypy]
 files = ["src", "tests"]
+mypy_path = ["tests/example"]
 python_version = "3.10"
 warn_unused_configs = true
 strict = true
@@ -119,6 +120,7 @@ disallow_incomplete_defs = true
 
 [tool.ruff]
 line-length = 79
+exclude = ["src/battui/_version.py"]
 [tool.ruff.format]
 quote-style = 'single'
 [tool.ruff.lint]
@@ -170,13 +172,26 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 # External Tests
 "tests/**" = ["T20", 'N805']
+# Example project: intentional style choices (os.path, TestCase assertions, lazy imports)
+"tests/example/**" = [
+    "ARG",     # CLI callbacks require specific signatures
+    "PLC0415", # Intentional lazy/conditional imports in tests
+    "PT009",   # Example uses TestCase-style assertions
+    "PT027",   # Example uses assertRaises
+    "PTH",     # Example uses os.path intentionally
+    "SIM117",  # Nested with statements are clearer in example code
+]
 # Internal (unit) Tests
 'src/**/test_*.py' = [
     'N805',
     'PT009',
+    'PT027',
 ]
 "noxfile.py" = ["T20"]
 
+
+[tool.codespell]
+ignore-words-list = "clienta"
 
 [tool.pylint]
 py-version = "3.10"

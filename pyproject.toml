@@ -103,6 +103,7 @@ report.exclude_also = [
 [tool.mypy]
 files = ["src", "tests"]
 mypy_path = ["tests/example"]
+explicit_package_bases = true
 python_version = "3.10"
 warn_unused_configs = true
 strict = true
@@ -116,6 +117,10 @@ disallow_incomplete_defs = false
 module = "battui.*"
 disallow_untyped_defs = true
 disallow_incomplete_defs = true
+
+[[tool.mypy.overrides]]
+module = "batconf.*"
+ignore_missing_imports = true
 
 
 [tool.ruff]

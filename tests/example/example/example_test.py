@@ -184,9 +184,9 @@ class GetIniConfigFunctionTests(TestCase):
         ex:
         .. code-block:: python
             command.add_argument(
-                '--config-opt',
-                dest='project.opt',
-                help='set the cfg.opt value',
+                "--config-opt",
+                dest="project.opt",
+                help="set the cfg.opt value",
             )
         """
         from argparse import Namespace

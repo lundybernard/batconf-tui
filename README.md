@@ -13,11 +13,15 @@
 
 <!-- SPHINX-START -->
 
-A Terminal User Interface for exploring [batconf](https://github.com/lundybernard/batconf) configuration in your projects.
+A Terminal User Interface for exploring
+[batconf](https://github.com/lundybernard/batconf) configuration in your
+projects.
 
 ## Overview
 
-`batconf-tui` lets you interactively browse the configuration tree of a batconf-managed project — viewing resolved values, their sources (CLI args, environment variables, config files), and the full schema hierarchy.
+`batconf-tui` lets you interactively browse the configuration tree of a
+batconf-managed project — viewing resolved values, their sources (CLI args,
+environment variables, config files), and the full schema hierarchy.
 
 ## Installation
 

@@ -1,4 +1,4 @@
-default: "test"
+default: test
 
 test:
   project:
@@ -10,10 +10,10 @@ test:
       clientB: "config.yaml: clientB.key1"
 
 production:
-  doc: "Options for the production environment"
+  doc: Options for the production environment
   project:
-    doc: "Python module specific options"
+    doc: Python module specific options
 
 flatfile:
   application:
-    opt1: 'flat file option 1'
+    opt1: flat file option 1

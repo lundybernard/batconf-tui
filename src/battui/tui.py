@@ -1,9 +1,12 @@
 import sys
 from functools import cached_property
 from importlib import import_module
+from importlib.abc import Loader
+from importlib.machinery import ModuleSpec
 from importlib.util import module_from_spec, spec_from_file_location
 from sys import argv, exit
-from typing import ClassVar
+from types import ModuleType
+from typing import ClassVar, cast
 
 from textual.app import App, BindingType, ComposeResult
 from textual.widgets import Footer, Header, Static
@@ -53,7 +56,7 @@ class ConfigLoader:
         return None
 
     @cached_property
-    def spec(self):
+    def spec(self) -> ModuleSpec:
         """The ``ModuleSpec`` for the file path.
 
         Raises
@@ -64,19 +67,21 @@ class ConfigLoader:
         """
         spec = spec_from_file_location('_batui_config', self.file_path)
         if spec is None:
-            raise ImportError(f'Cannot load file: {self.file_path}')
+            msg = f'Cannot load file: {self.file_path}'
+            raise ImportError(msg)
         return spec
 
     @cached_property
-    def loader(self):
+    def loader(self) -> Loader:
         """The file loader extracted from ``spec``."""
         loader = self.spec.loader
         if loader is None:
-            raise ImportError(f'Cannot load file: {self.file_path}')
+            msg = f'Cannot load file: {self.file_path}'
+            raise ImportError(msg)
         return loader
 
     @cached_property
-    def module(self):
+    def module(self) -> ModuleType:
         """The imported module, loaded via the appropriate strategy.
 
         Raises
@@ -93,7 +98,8 @@ class ConfigLoader:
         try:
             self.loader.exec_module(module)
         except FileNotFoundError as err:
-            raise ImportError(f'Cannot load file: {self.file_path}') from err
+            msg = f'Cannot load file: {self.file_path}'
+            raise ImportError(msg) from err
         return module
 
     @cached_property
@@ -106,13 +112,13 @@ class ConfigLoader:
             If ``attr`` does not exist on the module.
         """
         try:
-            return getattr(self.module, self.attr)
-        except AttributeError:
-            raise ImportError(
+            return cast('BatConfConfig', getattr(self.module, self.attr))
+        except AttributeError as err:
+            msg = (
                 f"Cannot find '{self.attr}'"
                 f' in {self.file_path or self.module_path}'
             )
-
+            raise ImportError(msg) from err
 
 
 class BatConfApp(App[None]):

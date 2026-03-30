@@ -107,7 +107,6 @@ class ConfigLoaderTests(TestCase):
                 _ = loader.config
 
 
-
 class BatConfAppTests(TestCase):
     """BatConfApp TUI unit tests"""
 

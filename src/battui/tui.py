@@ -95,9 +95,11 @@ class ConfigLoader:
 
         # Load from a .py file
         module = module_from_spec(self.spec)
+        sys.modules[self.spec.name] = module
         try:
             self.loader.exec_module(module)
         except FileNotFoundError as err:
+            sys.modules.pop(self.spec.name, None)
             msg = f'Cannot load file: {self.file_path}'
             raise ImportError(msg) from err
         return module

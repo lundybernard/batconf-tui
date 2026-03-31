@@ -14,8 +14,8 @@
 <!-- SPHINX-START -->
 
 A Terminal User Interface for exploring
-[batconf](https://github.com/lundybernard/batconf) configuration in your
-projects.
+[batconf](https://github.com/lundybernard/batconf)
+configuration in your projects.
 
 ## Overview
 
@@ -89,18 +89,31 @@ nox -s tests    # run tests
 <!-- SPHINX-END -->
 
 <!-- prettier-ignore-start -->
+
 [actions-badge]:            https://github.com/lundybernard/batconf-tui/workflows/CI/badge.svg
+
 [actions-link]:             https://github.com/lundybernard/batconf-tui/actions
+
 [conda-badge]:              https://img.shields.io/conda/vn/conda-forge/batconf-tui
+
 [conda-link]:               https://github.com/conda-forge/batconf-tui-feedstock
+
 [github-discussions-badge]: https://img.shields.io/static/v1?label=Discussions&message=Ask&color=blue&logo=github
+
 [github-discussions-link]:  https://github.com/lundybernard/batconf-tui/discussions
+
 [pypi-link]:                https://pypi.org/project/batconf-tui/
+
 [pypi-platforms]:           https://img.shields.io/pypi/pyversions/batconf-tui
+
 [pypi-version]:             https://img.shields.io/pypi/v/batconf-tui
+
 [rtd-badge]:                https://readthedocs.org/projects/batconf-tui/badge/?version=latest
+
 [rtd-link]:                 https://batconf-tui.readthedocs.io/en/latest/?badge=latest
+
 [coverage-badge]:           https://codecov.io/github/lundybernard/batconf-tui/branch/main/graph/badge.svg
+
 [coverage-link]:            https://codecov.io/github/lundybernard/batconf-tui
 
 <!-- prettier-ignore-end -->

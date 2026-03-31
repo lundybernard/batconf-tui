@@ -40,7 +40,7 @@ repos:
     hooks:
       - id: prettier
         types_or: [yaml, markdown, html, css, scss, javascript, json]
-        args: [--prose-wrap=always, --single-quote]
+        args: [--prose-wrap=preserve, --single-quote]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: 'v0.14.11'

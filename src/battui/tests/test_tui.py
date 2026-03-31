@@ -213,13 +213,16 @@ class tuiTests(TestCase):
         )
 
     @patch(f'{SRC}.sys.stderr')
-    def test_run_tui_import_error_exits_with_message(t, stderr: Mock) -> None:
+    @patch(f'{SRC}.sys.exit', side_effect=SystemExit)
+    def test_run_tui_import_error_exits_with_message(
+        t, mock_exit: Mock, stderr: Mock
+    ) -> None:
         t.ConfigLoader.side_effect = ImportError(
             'Cannot load file: /bad/conf.py'
         )
-        with t.assertRaises(SystemExit) as ctx:
+        with t.assertRaises(SystemExit):
             run_tui(config_path='/bad/conf.py::CFG')
-        t.assertNotEqual(ctx.exception.code, 0)
+        mock_exit.assert_called_once_with(1)
         stderr.write.assert_called_once_with(
             'Error: Cannot load file: /bad/conf.py\n'
         )

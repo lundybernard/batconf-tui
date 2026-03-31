@@ -156,6 +156,6 @@ def run_tui(config_path: str | None = None) -> None:
         config = ConfigLoader(config_path).config if config_path else None
     except ImportError as e:
         sys.stderr.write(f'Error: {e}\n')
-        exit(1)
+        sys.exit(1)
     tui = BatConfApp(config=config)
     tui.run()

@@ -4,7 +4,7 @@ from importlib import import_module
 from importlib.abc import Loader
 from importlib.machinery import ModuleSpec
 from importlib.util import module_from_spec, spec_from_file_location
-from sys import argv, exit
+from sys import argv
 from types import ModuleType
 from typing import ClassVar, cast
 
